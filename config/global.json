@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Instaparse": {
+            "applicationId": "5gGqqkDVidcpxWH6ww8fcz06d09jzeiKLgep9CYh", 
+            "masterKey": "jsVPn57Rlc7NymKT81UJ3rbfpYssshaoVXEg0dYd"
+        }, 
+        "_default": {
+            "link": "Instaparse"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.10"
+    }
+}

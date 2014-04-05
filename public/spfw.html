@@ -1,0 +1,521 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <script src="./lib/cache.js"></script>
+    <script src="./lib/config.js"></script>
+    <script src="./lib/parse-1.2.18.min.js"></script>
+    <script type="text/javascript" src="./lib/instafeed.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script src="./lib/jquery.bxslider.js"></script>
+    <link href="./lib/jquery.bxslider_360.css" rel="stylesheet" />
+    <title>Instagram Wall</title>    
+</head>
+
+<body style="background-color: #000; margin-left: 60px; margin-top: 0px">
+
+  <!-- VIEW CODE -->
+  <img id='loadingImg' style='position:absolute; width:100%; top:0px; left:0px; z-index:3001; opacity: 1.0;'
+    src='./images/wallpaper_instagram.png'/>
+
+  <img id='callToAction' style='position:absolute; width:360px; height:360px; top:360px; left:1500px; z-index:2000; opacity: 1.0;'
+    src='./images/calltoactionSPFW_black.png'/>
+
+  <div>
+    <!-- FIRST ROW -->
+    <div style="float: left;">
+      <ul id="instafeed-00"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-01"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-02"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-03"></ul>
+    </div>
+
+    <div>
+      <ul id="instafeed-04"></ul>
+    </div>
+
+    <!-- SECOND ROW -->
+    <div style="float: left;">
+      <div>
+        <div style="float: left;">
+          <ul id="instafeed-100"></ul>
+        </div>
+
+        <div style="float: left;">
+          <ul id="instafeed-101"></ul>
+        </div>
+      </div>
+      <div>
+        <div style="float: left">
+          <ul id="instafeed-102"></ul>
+        </div>
+
+        <div style="float: left;">
+          <ul id="instafeed-103"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-11"></ul>
+    </div>
+    
+    <!-- <div style="margin-top: -180px; margin-left: 4*180px; float: bottom;"> -->
+    <div style="float: left;">
+      <div style="float: bottom;">
+        <ul id="instafeed-120"></ul>
+      </div>
+
+      <div style="float: left;">
+        <ul id="instafeed-121"></ul>
+      </div>
+
+      <!-- <div style="margin-top: -180px; margin-left: 5*180px;"> -->
+      <div style="margin-top: -180px; margin-left: 180px;">
+        <ul id="instafeed-122"></ul>
+      </div>
+
+      <div style="float: left;">
+        <ul id="instafeed-123"></ul>
+      </div>
+    </div>
+    <div style="float: left;">
+      <ul id="instafeed-13"></ul>
+    </div>
+
+    <!-- <div style="margin-top: -180px; margin-left: 8*180px; float: bottom;"> -->
+    <div>
+      <div style="float: bottom;">
+        <ul id="instafeed-140"></ul>
+      </div>
+
+      <div style="float: left;">
+        <ul id="instafeed-141"></ul>
+      </div>
+
+      <!-- <div style="margin-top: -180px; margin-left: 9*180px;"> -->
+      <div style="margin-top: -180px; margin-left: 180px;">
+        <ul id="instafeed-142"></ul>
+      </div>
+
+      <div>
+        <ul id="instafeed-143"></ul>
+      </div>
+    </div>
+    <!-- THIRD ROW -->
+    <div style="float: left;">
+      <ul id="instafeed-20"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-21"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-22"></ul>
+    </div>
+
+    <div style="float: left">
+      <ul id="instafeed-23"></ul>
+    </div>
+
+    <div>
+      <ul id="instafeed-24"></ul>
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+
+  // Don't modify these
+  var feedCount = 0;
+  var tName;
+  var feeds = [];
+  var feedsReady = 0;
+  var totalFeeds = 0;
+
+  // General config data
+  var ACCESS_TOKEN_0 = '1213955656.c1ea7e4.bb70f835ba6d4d8d94933b5327c154c7'; // igfashionweek
+  var ACCESS_TOKEN = [ACCESS_TOKEN_0];
+
+  var CLIENT_ID = '';
+  var REFRESH_RATE = 5*60*1000; // How often is the page reloaded
+  
+  var USER_ID = [1213944582,  // 0 InstaStopSPFW
+                 1213951114];   // 1 InstaStopSPFWGuest
+
+  var TEMPLATE = '<li><img src="{{image}}" title="@{{username}}"/></li>'; // This is used only for captions
+  var LIMIT = '30'; // Number of photos to retrieve via IG API
+  var TILE_SIZE = 360;
+
+  /* Tile specific config data */
+
+  // 00 01 02 03 04
+  var instafeed_get = ['liked', 'user', 'user', 'user', 'user'];
+  // 100 101 102 103 11 120 121 122 123 13 140 141 142 143
+  instafeed_get.push('user', 'user', 'user', 'user');
+  instafeed_get.push('user');
+  instafeed_get.push('user', 'user', 'user', 'user');
+  instafeed_get.push('liked');
+  instafeed_get.push('user', 'user', 'user', 'user');
+  // 20 21 22 23
+  instafeed_get.push('user', 'liked', 'user', 'user', 'liked');
+
+  // 00 01 02 03 04
+  var instafeed_userId = [USER_ID[0], USER_ID[1], USER_ID[0], USER_ID[1], USER_ID[0]];
+  // 100 101 102 103 11 120 121 122 123 13 140 141 142 143
+  instafeed_userId.push(USER_ID[0], USER_ID[1], USER_ID[1], USER_ID[0]);
+  instafeed_userId.push(USER_ID[0]);
+  instafeed_userId.push(USER_ID[0], USER_ID[1], USER_ID[1], USER_ID[0]);
+  instafeed_userId.push(USER_ID[0]);
+  instafeed_userId.push(USER_ID[0], USER_ID[1], USER_ID[1], USER_ID[0]);
+  // 20 21 22 23
+  instafeed_userId.push(USER_ID[0], USER_ID[1], USER_ID[0], USER_ID[1], USER_ID[0]);
+
+  // 00 01 02 03 04
+  var instafeed_mode = ['horizontal', 'fade', 'vertical', 'fade', 'horizontal'];
+  // 100 101 102 103 11 120 121 122 123 13 140 141 142 143
+  instafeed_mode.push('vertical', 'horizontal', 'vertical', 'horizontal');
+  instafeed_mode.push('fade');
+  instafeed_mode.push('vertical', 'horizontal', 'vertical', 'horizontal');
+  instafeed_mode.push('fade');
+  instafeed_mode.push('vertical', 'horizontal', 'vertical', 'horizontal');
+  // 20 21 22 23
+  instafeed_mode.push('horizontal', 'fade', 'vertical', 'fade', 'horizontal');
+
+  // Refresh content on Parse
+  for (var i = 0; i < USER_ID.length; i++) {
+    Parse.Cloud.run('updateRecentMediaByUser', {userId: USER_ID[i], count: '30'}, {
+      success: function(result) {
+        console.log(result);
+      },
+      error: function(error) {
+      }
+    });
+  };
+
+  for (var i = 0; i < ACCESS_TOKEN.length; i++) {
+    Parse.Cloud.run('updateSelfLikedMedia', {token: ACCESS_TOKEN[i], count: '30'}, {
+      success: function(result) {
+        console.log(result);
+      },
+      error: function(error) {
+      }
+    });
+  };
+
+  // Fade out loading image when all feeds are ready
+  function setLoadingImg() {
+    feedsReady++;
+    if (feedsReady >= totalFeeds) {
+      $("#loadingImg").fadeOut(1000);
+    }
+  }
+
+  for (var i = 0; i < 5; i++, feedCount++) {
+    tName = 'instafeed-0' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-0' + j;
+          var feed = new Instafeed({
+
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN[0],
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+            
+            after: function() {
+              $('#'+targetName).bxSlider({
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  /* Second Row */
+  for (var i = 0; i < 4; i++, feedCount++) {
+    tName = 'instafeed-10' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-10' + j;
+          var feed = new Instafeed({
+            
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN[0],
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+
+            after: function() {
+              $('#'+targetName).bxSlider({
+
+                miniSize: true,
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  feeds.push(
+    (function(fCount) {
+      return function() {
+        var targetName = 'instafeed-11';
+        var feed = new Instafeed({
+
+          target: targetName,
+          get: instafeed_get[fCount],
+          userId: instafeed_userId[fCount],
+          accessToken: ACCESS_TOKEN[0],
+          clientId: CLIENT_ID,
+          limit: LIMIT,
+          resolution: 'standard_resolution',
+          template: TEMPLATE,
+          after: function() {
+
+            $('#'+targetName).bxSlider({
+              miniSize: false,
+              mode: instafeed_mode[fCount],
+              startSlide: Math.floor(Math.random() * LIMIT),
+              auto: true,
+              pause: 15000,
+              captions: false,
+              pager: false,
+              controls: false,
+              responsive: false
+            });
+            setLoadingImg();
+          }
+        });
+        feed.run();
+      }
+    })(feedCount)
+  );
+  feedCount++;
+  
+  for (var i = 0; i < 4; i++, feedCount++) {
+    tName = 'instafeed-12' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-12' + j;
+          var feed = new Instafeed({
+            
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN[0],
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+
+            after: function() {
+              $('#'+targetName).bxSlider({
+
+                miniSize: true,
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  feeds.push(
+    (function(fCount) {
+      return function() {
+        var targetName = 'instafeed-13';
+        var feed = new Instafeed({
+
+          target: targetName,
+          get: instafeed_get[fCount],
+          userId: instafeed_userId[fCount],
+          accessToken: ACCESS_TOKEN[0],
+          clientId: CLIENT_ID,
+          limit: LIMIT,
+          resolution: 'standard_resolution',
+          template: TEMPLATE,
+          after: function() {
+
+            $('#'+targetName).bxSlider({
+              miniSize: false,
+              mode: instafeed_mode[fCount],
+              startSlide: Math.floor(Math.random() * LIMIT),
+              auto: true,
+              pause: 15000,
+              captions: false,
+              pager: false,
+              controls: false,
+              responsive: false
+            });
+            setLoadingImg();
+          }
+        });
+        feed.run();
+      }
+    })(feedCount)
+  );
+  feedCount++;
+
+  for (var i = 0; i < 4; i++, feedCount++) {
+    tName = 'instafeed-14' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-14' + j;
+          var feed = new Instafeed({
+            
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN[0],
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+
+            after: function() {
+              $('#'+targetName).bxSlider({
+
+                miniSize: true,
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  /* Third Row */
+  for (var i = 0; i < 5; i++, feedCount++) {
+    tName = 'instafeed-2' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-2' + j;
+          var feed = new Instafeed({
+
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN[0],
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+            
+            after: function() {
+              $('#'+targetName).bxSlider({
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  $(document).ready(function(){
+
+    totalFeeds = feeds.length;
+
+    for(var k=0, len=feeds.length; k < len; k++) {
+      feeds[k]();
+    }
+  });
+
+  var time = new Date().getTime();
+
+  function refresh() {
+    $("#loadingImg").fadeIn(1000, function() {
+      location.reload();
+    });
+  }
+  setInterval(refresh, REFRESH_RATE);
+
+  $("#callToAction").css({'width': TILE_SIZE+'px', 'height': TILE_SIZE+'px'});
+  function animateCallToAction() {
+    if ($("#callToAction").is(":visible"))
+      $("#callToAction").fadeOut(1000);
+    else {
+      // var randomX = TILE_SIZE*(Math.floor(Math.random() * 5));
+      // var randomY = TILE_SIZE*(Math.floor(Math.random() * 3));
+      // $("#callToAction").css({'top': randomY+'px', 'left': randomX+'px'});
+      $("#callToAction").fadeIn(1000);
+    }
+  }
+  setInterval(animateCallToAction, REFRESH_RATE/3);
+
+  </script>
+</body>
+</html>

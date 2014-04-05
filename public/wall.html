@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<html>
+<head>
+    <script src="./lib/cache.js"></script>
+    <script src="./lib/config.js"></script>
+    <script src="./lib/parse-1.2.18.min.js"></script>
+    <script type="text/javascript" src="./lib/instafeed.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script src="./lib/jquery.bxslider.igwall.js"></script>
+    <link href="./lib/jquery.bxslider.igwall.css" rel="stylesheet" />
+    <title>Instagram Wall</title>    
+</head>
+
+<body style="background-color: #000; margin-left: 0px; margin-top: 0px">
+
+  <!-- VIEW CODE -->
+  <img id='logoImg' style='position:absolute; width:100%; top:0px; left:0px; z-index:-1; opacity: 1.0;'
+    src='./images/wallpaper_instagram_black.jpg'/>
+
+  <!-- <img id='callToAction' style='position:absolute; width:360px; height:360px; top:360px; left:1500px; z-index:2000; opacity: 1.0;'
+    src='./images/calltoactionSPFW_black.png'/> -->
+
+  <div id="instawall">
+  </div>
+
+  <script type="text/javascript">
+
+  // Don't modify these
+  var feedCount = 0;
+  var feeds = [];
+  var loadedFeeds = 0;
+  var totalFeeds = 0;
+  var _tileSize;
+
+  // General config data
+  var ACCESS_TOKEN = config.accessToken;
+  var REFRESH_RATE = config.reloadRate; // How often is the page reloaded
+  var USER_ID = config.userId;
+  var TEMPLATE = config.captionTemplate; // This is used only for captions
+  var LIMIT = config.apiLimit; // Number of photos to retrieve via IG API
+  var TILE_SIZE = 360;
+
+
+  /* Refresh content on Parse */
+  // for (var i = 0; i < USER_ID.length; i++) {
+  //   Parse.Cloud.run('updateRecentMediaByUser', {userId: USER_ID[i], count: '30'}, {
+  //     success: function(result) {
+  //       console.log(result);
+  //     },
+  //     error: function(error) {
+  //     }
+  //   });
+  // };
+
+  // for (var i = 0; i < ACCESS_TOKEN.length; i++) {
+  //   Parse.Cloud.run('updateSelfLikedMedia', {token: ACCESS_TOKEN[i], count: '30'}, {
+  //     success: function(result) {
+  //       console.log(result);
+  //     },
+  //     error: function(error) {
+  //     }
+  //   });
+  // };
+
+  /* Fade out loading image when all feeds are ready */
+  function updateLoadedFeeds() {
+    loadedFeeds++;
+    if (loadedFeeds >= totalFeeds) {
+      $("#logoImg").fadeOut(8000);
+      setTimeout(showTiles(), 5000);
+    }
+  }
+
+  function showTiles() {
+    $('.bx-wrapper').each(function(i) {
+      var el=$(this);
+      setTimeout(function() { 
+        el.animate({ opacity: 1.0 });
+      }, 300+Math.floor((Math.random()*1000)) );
+    });
+  }
+
+  var possibleTileTypes = [];
+  for (var i = 0; i < config.userId.length; i++) {
+    possibleTileTypes.push('user');
+  }
+  for (var i = 0; i < config.accessToken.length; i++) {
+    possibleTileTypes.push('liked');
+  }
+
+  var possibleTileAnimationModes = ['horizontal', 'fade', 'vertical'];
+
+  /* 
+   * This function is used to define how to retrieve specific parameters for a given tile.
+   */
+  function getParamValueforTile (tileIndex, param) {
+    switch(param) {
+      case 'userId' : 
+        return config.userId[tileIndex % config.userId.length];
+        break;
+      case 'accessToken' :
+        return config.accessToken[tileIndex % config.accessToken.length];
+        break;
+      case 'get' :
+        return possibleTileTypes[tileIndex % possibleTileTypes.length];
+        break;
+      case 'mode' :
+        return possibleTileAnimationModes[tileIndex % possibleTileAnimationModes.length];
+        break;
+      default:
+        return undefined;
+    }
+  }
+
+  /* Create a random tile of normal size */
+  function createTile () {
+
+    $('<div></div>')
+      .css({ 'float': 'left' })
+      // .hide()
+      .append($('<ul></ul>')
+        .attr({ id : 'instafeed-' + feedCount }))
+      .appendTo('#instawall');
+
+    feeds.push(
+      (function(fCount) {
+        return function() {
+          var targetName = 'instafeed-' + fCount;
+          var feed = new Instafeed({
+
+            target: targetName,
+            get: getParamValueforTile(fCount, 'get'),
+            userId: getParamValueforTile(fCount, 'userId'),
+            accessToken: getParamValueforTile(fCount, 'accessToken'),
+            clientId: '', // Not used for 'user' or 'liked'
+            limit: config.apiLimit,
+            resolution: 'standard_resolution',
+            template: config.captionTemplate, // Used only if captions is true
+            
+            after: function() {
+              $('#'+targetName).bxSlider({
+                mode: getParamValueforTile(fCount, 'mode'),
+                startSlide: Math.floor(Math.random() * config.apiLimit),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: true,
+                pager: false,
+                controls: false,
+                responsive: true,
+                tileSize: _tileSize
+              });
+              updateLoadedFeeds();
+            }
+          });
+          feed.run();
+        }
+      })(feedCount)
+    );
+    // Keep track of how many feeds were created
+    feedCount++;
+  }
+
+  // Set wall dimensions
+  if (config.tileSize == 0) {
+    // No tile size specified, but we know rows and columns
+    if (config.screenWidth == 0 || config.screenHeight == 0) {
+      horizontalTileFit = Math.floor($(window).width()/config.columns);
+      verticalTileFit = Math.floor($(window).height()/config.rows);
+      _tileSize = Math.min(horizontalTileFit, verticalTileFit);
+    } else {
+      _tileSize = Math.floor(config.screenWidth/config.columns);
+    }
+    _totalTiles = config.rows * config.columns;
+    _tileSize = Math.min(_tileSize, 640);
+    $('#instawall').css({ width: config.columns * _tileSize});
+
+  } else {
+
+    _tileSize = Math.min(config.tileSize, 640);
+    // Tile size specified, we may or may not know rows and columns
+    if (config.rows > 0 && config.columns > 0) {
+      $('#instawall').css({ width: config.columns * _tileSize});
+      _totalTiles = config.rows * config.columns;
+    } else {
+      if (config.screenWidth > 0 && config.screenHeight > 0) {
+        _totalTiles = Math.floor(config.screenWidth/config.tileSize)
+                      * Math.floor(config.screenHeight/config.tileSize);
+        $('#instawall').css({ width: config.screenWidth });
+      } else {
+        _totalTiles = Math.floor($(window).width()/config.tileSize)
+                      * Math.floor($(window).height()/config.tileSize);
+      }
+    }
+  }
+
+  /*
+   *  Main loop to create the wall
+  */
+  for (var i = 0; i < _totalTiles; i++) {
+    createTile();
+  };
+
+  /* Reload page */
+  function refresh() {
+
+    $("#logoImg").fadeIn(100);
+    $('.bx-wrapper').each(function(i) {
+      var el=$(this);
+      setTimeout(function() { 
+        el.animate({ opacity: 0.0 });
+      }, 300+Math.floor((Math.random()*1000)) ); 
+    });
+
+    setTimeout(function(){location.reload()}, 3000);
+
+    // $("#logoImg").fadeIn(1000, function() {
+    //   location.reload();
+    // });
+  }
+  setTimeout(refresh, REFRESH_RATE);
+
+  /* Set and animate call to action */
+  // $("#callToAction").css({'width': TILE_SIZE+'px', 'height': TILE_SIZE+'px'});
+  // function animateCallToAction() {
+  //   if ($("#callToAction").is(":visible"))
+  //     $("#callToAction").fadeOut(1000);
+  //   else {
+  //     // var randomX = TILE_SIZE*(Math.floor(Math.random() * 5));
+  //     // var randomY = TILE_SIZE*(Math.floor(Math.random() * 3));
+  //     // $("#callToAction").css({'top': randomY+'px', 'left': randomX+'px'});
+  //     $("#callToAction").fadeIn(1000);
+  //   }
+  // }
+  // setInterval(animateCallToAction, REFRESH_RATE/3);
+
+  /* Document Ready */
+  $(document).ready(function(){
+
+    totalFeeds = feeds.length;
+
+    for(var k=0, len=feeds.length; k < len; k++) {
+      feeds[k]();
+    }
+  });
+
+  </script>
+</body>
+</html>

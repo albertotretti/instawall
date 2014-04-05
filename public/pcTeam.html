@@ -1,0 +1,492 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<head>
+    <script type="text/javascript" src="./lib/instafeed.js"></script>
+    <script src="./lib/jquery.min.js"></script>
+    <script src="./lib/jquery.bxslider.js"></script>
+    <link href="./lib/jquery.bxslider_360.css" rel="stylesheet" />
+    <title>Instagram Wall</title>    
+</head>
+
+<body style="background-color: #000; margin-left: 0px; margin-top: 0px">
+
+  <!-- VIEW CODE -->
+  <img id='loadingImg' style='position:absolute; width:100%; top:0px; left:0px; z-index:3001; opacity: 1.0;'
+    src='./images/banner-01.png'/>
+
+  <!-- <img id='callToAction' style='position:absolute; z-index:2000; opacity: 1.0;'
+    src='./images/calltoactionSPFW.png'/> -->
+
+  <div>
+    <!-- FIRST ROW -->
+    <div style="float: left;">
+      <ul id="instafeed-00"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-01"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-02"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-03"></ul>
+    </div>
+
+    <div>
+      <ul id="instafeed-04"></ul>
+    </div>
+
+    <!-- SECOND ROW -->
+    <div style="float: bottom;">
+      <ul id="instafeed-100"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-101"></ul>
+    </div>
+
+    <div style="margin-top: -180px; margin-left: 180px;">
+      <ul id="instafeed-102"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-103"></ul>
+    </div>
+
+    <div style="margin-top: -180px; float: left;">
+      <ul id="instafeed-11"></ul>
+    </div>
+    
+    <!-- <div style="margin-top: -180px; margin-left: 4*180px; float: bottom;"> -->
+    <div style="margin-top: -180px; margin-left: 720px; float: bottom;">
+      <ul id="instafeed-120"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-121"></ul>
+    </div>
+
+    <!-- <div style="margin-top: -180px; margin-left: 5*180px;"> -->
+    <div style="margin-top: -180px; margin-left: 900px;">
+      <ul id="instafeed-122"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-123"></ul>
+    </div>
+
+    <div style="margin-top: -180px; float: left;">
+      <ul id="instafeed-13"></ul>
+    </div>
+
+    <!-- <div style="margin-top: -180px; margin-left: 8*180px; float: bottom;"> -->
+    <div style="margin-top: -180px; margin-left: 1440px; float: bottom;">
+      <ul id="instafeed-140"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-141"></ul>
+    </div>
+
+    <!-- <div style="margin-top: -180px; margin-left: 9*180px;"> -->
+    <div style="margin-top: -180px; margin-left: 1620px;">
+      <ul id="instafeed-142"></ul>
+    </div>
+
+    <div>
+      <ul id="instafeed-143"></ul>
+    </div>
+
+    <!-- THIRD ROW -->
+    <div style="float: left;">
+      <ul id="instafeed-20"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-21"></ul>
+    </div>
+
+    <div style="float: left;">
+      <ul id="instafeed-22"></ul>
+    </div>
+
+    <div style="float: left">
+      <ul id="instafeed-23"></ul>
+    </div>
+
+    <div>
+      <ul id="instafeed-24"></ul>
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+
+  /* General config data */
+  var ACCESS_TOKEN_0 = '969629.7ee45e1.564cf37667ee432fb08a8e91233f053f'; // albertotretti
+  var ACCESS_TOKEN_1 = '969629.7ee45e1.564cf37667ee432fb08a8e91233f053f'; // albertotretti
+  var ACCESS_TOKEN_2 = '969629.7ee45e1.564cf37667ee432fb08a8e91233f053f'; // albertotretti
+  var ACCESS_TOKEN_3 = '969629.7ee45e1.564cf37667ee432fb08a8e91233f053f'; // albertotretti
+  var ACCESS_TOKEN_4 = '969629.7ee45e1.564cf37667ee432fb08a8e91233f053f'; // albertotretti
+
+  var CLIENT_ID = '';
+  var REFRESH_RATE = 60*60*1000;
+  var USER_ID_1 = 561009264; // DiscoverChannel
+  var USER_ID_2 = 28636526; // jobyogwyn
+  var USER_ID_3 = 254184013; //nickkristof
+  var TEMPLATE = '<li><img src="{{image}}" title="@{{username}}"/></li>';
+  var LIMIT = '30';
+  var TILE_SIZE = 360;
+
+  /* Tile specific config data */
+
+  // 00 01 02 03 04
+  var instafeed_get = ['user', 'user', 'user', 'user', 'user'];
+  // 100 101 102 103 11 120 121 122 123 13 140 141 142 143
+  instafeed_get.push('user', 'user', 'user', 'user');
+  instafeed_get.push('user');
+  instafeed_get.push('user', 'user', 'user', 'user');
+  instafeed_get.push('user');
+  instafeed_get.push('user', 'user', 'user', 'user');
+  // 20 21 22 23
+  instafeed_get.push('user', 'user', 'user', 'user', 'user');
+
+  // 00 01 02 03 04
+  var instafeed_userId = [USER_ID_3, USER_ID_2, USER_ID_1, USER_ID_2, USER_ID_1];
+  // 100 101 102 103 11 120 121 122 123 13 140 141 142 143
+  instafeed_userId.push(USER_ID_1, USER_ID_2, USER_ID_2, USER_ID_1);
+  instafeed_userId.push(USER_ID_1);
+  instafeed_userId.push(USER_ID_1, USER_ID_2, USER_ID_2, USER_ID_1);
+  instafeed_userId.push(USER_ID_1);
+  instafeed_userId.push(USER_ID_1, USER_ID_2, USER_ID_2, USER_ID_1);
+  // 20 21 22 23
+  instafeed_userId.push(USER_ID_1, USER_ID_2, USER_ID_1, USER_ID_2, USER_ID_3);
+
+  // 00 01 02 03 04
+  var instafeed_mode = ['horizontal', 'fade', 'vertical', 'fade', 'horizontal'];
+  // 100 101 102 103 11 120 121 122 123 13 140 141 142 143
+  instafeed_mode.push('vertical', 'horizontal', 'vertical', 'horizontal');
+  instafeed_mode.push('fade');
+  instafeed_mode.push('vertical', 'horizontal', 'vertical', 'horizontal');
+  instafeed_mode.push('fade');
+  instafeed_mode.push('vertical', 'horizontal', 'vertical', 'horizontal');
+  // 20 21 22 23
+  instafeed_mode.push('horizontal', 'fade', 'vertical', 'fade', 'horizontal');
+
+  
+  /* Don't modify these */
+  var feedCount = 0;
+  var tName;
+  var feeds = [];
+  var feedsReady = 0;
+  var totalFeeds = 0;
+
+
+  function setLoadingImg() {
+    feedsReady++;
+    if (feedsReady >= totalFeeds) {
+      $("#loadingImg").fadeOut(1000);
+    }
+  }
+
+  for (var i = 0; i < 5; i++, feedCount++) {
+    tName = 'instafeed-0' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-0' + j;
+          var feed = new Instafeed({
+
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN_0,
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+            
+            after: function() {
+              $('#'+targetName).bxSlider({
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  /* Second Row */
+  for (var i = 0; i < 4; i++, feedCount++) {
+    tName = 'instafeed-10' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-10' + j;
+          var feed = new Instafeed({
+            
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN_1,
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+
+            after: function() {
+              $('#'+targetName).bxSlider({
+
+                miniSize: true,
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  feeds.push(
+    (function(fCount) {
+      return function() {
+        var targetName = 'instafeed-11';
+        var feed = new Instafeed({
+
+          target: targetName,
+          get: instafeed_get[fCount],
+          userId: instafeed_userId[fCount],
+          accessToken: ACCESS_TOKEN_2,
+          clientId: CLIENT_ID,
+          limit: LIMIT,
+          resolution: 'standard_resolution',
+          template: TEMPLATE,
+          after: function() {
+
+            $('#'+targetName).bxSlider({
+              miniSize: false,
+              mode: instafeed_mode[fCount],
+              startSlide: Math.floor(Math.random() * LIMIT),
+              auto: true,
+              pause: 15000,
+              captions: false,
+              pager: false,
+              controls: false,
+              responsive: false
+            });
+            setLoadingImg();
+          }
+        });
+        feed.run();
+      }
+    })(feedCount)
+  );
+  feedCount++;
+  
+  for (var i = 0; i < 4; i++, feedCount++) {
+    tName = 'instafeed-12' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-12' + j;
+          var feed = new Instafeed({
+            
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN_3,
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+
+            after: function() {
+              $('#'+targetName).bxSlider({
+
+                miniSize: true,
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  feeds.push(
+    (function(fCount) {
+      return function() {
+        var targetName = 'instafeed-13';
+        var feed = new Instafeed({
+
+          target: targetName,
+          get: instafeed_get[fCount],
+          userId: instafeed_userId[fCount],
+          accessToken: ACCESS_TOKEN_2,
+          clientId: CLIENT_ID,
+          limit: LIMIT,
+          resolution: 'standard_resolution',
+          template: TEMPLATE,
+          after: function() {
+
+            $('#'+targetName).bxSlider({
+              miniSize: false,
+              mode: instafeed_mode[fCount],
+              startSlide: Math.floor(Math.random() * LIMIT),
+              auto: true,
+              pause: 15000,
+              captions: false,
+              pager: false,
+              controls: false,
+              responsive: false
+            });
+            setLoadingImg();
+          }
+        });
+        feed.run();
+      }
+    })(feedCount)
+  );
+  feedCount++;
+
+  for (var i = 0; i < 4; i++, feedCount++) {
+    tName = 'instafeed-14' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-14' + j;
+          var feed = new Instafeed({
+            
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN_2,
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+
+            after: function() {
+              $('#'+targetName).bxSlider({
+
+                miniSize: true,
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  /* Third Row */
+  for (var i = 0; i < 5; i++, feedCount++) {
+    tName = 'instafeed-2' + i;
+    feeds.push(
+      (function(j, fCount) {
+        return function() {
+          var targetName = 'instafeed-2' + j;
+          var feed = new Instafeed({
+
+            target: targetName,
+            get: instafeed_get[fCount],
+            userId: instafeed_userId[fCount],
+            accessToken: ACCESS_TOKEN_4,
+            clientId: CLIENT_ID,
+            limit: LIMIT,
+            resolution: 'standard_resolution',
+            template: TEMPLATE,
+            
+            after: function() {
+              $('#'+targetName).bxSlider({
+                mode: instafeed_mode[fCount],
+                startSlide: Math.floor(Math.random() * LIMIT),
+                auto: true,
+                pause: 7000+100*(Math.floor(Math.random() * 40) + 1),
+                captions: false,
+                pager: false,
+                controls: false,
+                responsive: false
+              });
+              setLoadingImg();
+            }
+          });
+          feed.run();
+        }
+      })(i, feedCount)
+    );
+  }
+
+  $(document).ready(function(){
+
+    totalFeeds = feeds.length;
+
+    for(var k=0, len=feeds.length; k < len; k++) {
+      feeds[k]();
+    }
+  });
+
+  var time = new Date().getTime();
+
+  function refresh() {
+    $("#loadingImg").fadeIn(1000, function() {
+      location.reload();
+    });
+  }
+  setInterval(refresh, REFRESH_RATE);
+
+  // $("#callToAction").css({'width': TILE_SIZE+'px', 'height': TILE_SIZE+'px'});
+  // function animateCallToAction() {
+  //   if ($("#callToAction").is(":visible"))
+  //     $("#callToAction").fadeOut(1000);
+  //   else {
+  //     var randomX = TILE_SIZE*(Math.floor(Math.random() * 5));
+  //     var randomY = TILE_SIZE*(Math.floor(Math.random() * 3));
+  //     $("#callToAction").css({'top': randomY+'px', 'left': randomX+'px'});
+  //     $("#callToAction").fadeIn(1000);
+  //   }
+  // }
+  // setInterval(animateCallToAction, 6000);
+
+  </script>
+</body>
+</html>

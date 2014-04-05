@@ -1,0 +1,39 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+
+  <script src="http://www.parsecdn.com/js/parse-1.2.18.min.js"></script>
+</head>
+
+<body style="background-color: #000; margin-left: 60px; margin-top: 0px">
+  <script type="text/javascript">
+
+    var USER_ID_1 = 561009264; // DiscoverChannel
+    var USER_ID_2 = 28636526; // jobyogwyn
+    var USER_ID_3 = 749024264; //nickkristof
+
+    var igUsers = [USER_ID_1, USER_ID_2, USER_ID_3];
+
+    Parse.initialize("5gGqqkDVidcpxWH6ww8fcz06d09jzeiKLgep9CYh", "8BlrPvM5B4ctm1eN3Wrhp57tE2XGdh5GWvIg8kuk");
+  
+    // for (var i = 0; i < igUsers.length; i++) {
+    //   Parse.Cloud.run('updateRecentMediaByUser', {userId: igUsers[i], count: '30'}, {
+    //     success: function(result) {
+    //       console.log(result);
+    //     },
+    //     error: function(error) {
+    //     }
+    //   });
+    // };
+
+    Parse.Cloud.run('updateSelfLikedMedia', {token: '969629.7ee45e1.564cf37667ee432fb08a8e91233f053f', count: '30'}, {
+      success: function(result) {
+        console.log(result);
+      },
+      error: function(error) {
+      }
+    });
+
+  </script>
+</body>
+</html>
