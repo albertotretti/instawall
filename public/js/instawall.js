@@ -172,6 +172,22 @@
     this.addTile(this.createInstaTile(feed, options));
   };
 
+  InstaWall.prototype.createImageTile = function (src, options) {
+    
+    options = $.extend({
+      width:  this.options.tileWidth,
+      height: this.options.tileHeight     
+    }, options);
+
+    var tile = new ImageTile(src, options);
+
+    return tile;
+  };
+
+  InstaWall.prototype.addImageTile = function (src, options) {
+    this.addTile(this.createImageTile(src, options));
+  };
+
   InstaWall.prototype.createInstaTileset = function (columns, rows, feed) {
     
     var wall = new InstaWall(columns, rows, {
