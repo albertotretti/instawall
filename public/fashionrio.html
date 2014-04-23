@@ -11,11 +11,11 @@
     <script type="text/javascript" src="./js/instatile.js"></script>
     <script type="text/javascript" src="./js/imagetile.js"></script>
     <script type="text/javascript" src="./js/instawall.js"></script>
-    
+
     <link href="./css/instawall.css" rel="stylesheet" />
     <link href="./lib/jquery.bxslider.css" rel="stylesheet" />
-    
-    <title>Instagram Wall</title>    
+
+    <title>Instagram Wall</title>
 </head>
 
 <body style="background-color: #000; margin-left: 0px; margin-top: 0px">
@@ -93,7 +93,7 @@
 
     var wall = new InstaWall(6,3);
     wall.container.css({opacity: 0});
-    wall.container.appendTo($("#instawall"));    
+    wall.container.appendTo($("#instawall"));
 
     // Create initial tiles
     for (var i = 0; i < 6 * 3; i++) {
@@ -103,7 +103,7 @@
       }
       else {
         random = Math.random();
-        
+
         if (random > 0.75) {
           wall.addInstaTileset(2, 2, feeds[i % feeds.length]);
         }

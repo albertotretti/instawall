@@ -19,7 +19,7 @@
    *     - accessToken:
    *         the access token of the user
    *         (for "liked" feed only)
-   *     
+   *
    *     - limit:
    *         number of photos to fetch
    *
@@ -30,21 +30,21 @@
    *     - animation:
    *         the desired bxSlider animation for
    *         this tile
-   *     
+   *
    *     - captions:
    *         whether to show captions on the photos
-   *     
+   *
    *     - onLoad: [function]
    *         callback called when the tile is loaded
    *         and applyied to the tile
    */
   var InstaTile = function (feed, options) {
-    
+
     var tile = this;
 
     // Merge defaults
     tile.options = $.extend({
-      
+
       // Dimensions
       width:  320,
       height: 360,
@@ -61,7 +61,7 @@
     tile.loaded    = false;
 
     // Create html elements
-    tile.container     = $('<div class="instatile"></div>'); 
+    tile.container     = $('<div class="instatile"></div>');
     tile.feedContainer = $('<ul id="instafeed-' + tile.tileIndex + '"></ul>');
 
     tile.container.css("width",  tile.options.width  + "px");
@@ -73,7 +73,7 @@
 
     tile.loadingSandbox.append(tile.container);
     tile.container.append(tile.feedContainer);
-    
+
     // FIXME remove the need of a loading sandbox
     setTimeout(function () {
       tile.loadingSandbox.remove();
@@ -96,7 +96,7 @@
       target: this.feedContainer.attr('id'),
 
       // Used only if captions is true
-      template: '<li><div><img src="{{image}}" title="@{{username}}"/></div></li>', 
+      template: '<li><div><img src="{{image}}" title="@{{username}}"/></div></li>',
 
       get: tile.feed.get,
       userId: tile.feed.userId,
@@ -107,7 +107,7 @@
       clientId: '',
 
       resolution: 'standard_resolution',
-      
+
       after: function() {
 
         // Randomize pause time
@@ -125,8 +125,8 @@
 
         // Randomize start slide
         var slides     = tile.feedContainer.find("li")
-        var startSlide = Math.floor(Math.random() * slides.size()); 
-        
+        var startSlide = Math.floor(Math.random() * slides.size());
+
         // Fix dimensions
         var maxDimension = Math.max(tile.options.width, tile.options.height);
         var diff         = tile.options.width - tile.options.height;
@@ -139,12 +139,12 @@
           .css("height", tile.options.height + "px");
 
         // if width smaller than height...
-        if (diff < 0) { 
+        if (diff < 0) {
           tile.feedContainer.find("img").css("margin-left", diff/2 + "px");
         }
 
         // if height smaller than width...
-        if (diff > 0) { 
+        if (diff > 0) {
           tile.feedContainer.find("img").css("margin-top", (-1 * diff/2) + "px");
         }
 
@@ -158,7 +158,7 @@
           pager: false,
           controls: false,
           responsive: false
-        });   
+        });
 
         tile.loaded = true;
         tile.options.onLoad.apply(tile);
@@ -187,7 +187,7 @@
   InstaTile.prototype.destroy = function () {
     this.feedContainer.destroySlider();
     this.container.remove();
-  };  
+  };
 
   window.InstaTile = InstaTile;
 

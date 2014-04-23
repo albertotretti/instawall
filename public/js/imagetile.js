@@ -17,16 +17,16 @@
    *
    *     - onLoad: [function]
    *         callback called when the tile is loaded
-   *         and applyied to the tile   
-   *     
+   *         and applyied to the tile
+   *
    */
   var ImageTile = function (src, options) {
-    
+
     var tile = this;
 
     // Merge defaults
     tile.options = $.extend({
-      
+
       // Dimensions
       width:  320,
       height: 360,
@@ -39,7 +39,7 @@
     tile.loaded = true;
 
     // Create html elements
-    tile.container = $('<div class="instatile imagetile"></div>'); 
+    tile.container = $('<div class="instatile imagetile"></div>');
     tile.image     = $('<img src="' + src + '"></ul>');
 
     tile.container.css("width",  tile.options.width  + "px");
@@ -55,7 +55,7 @@
 
   Image.prototype.destroy = function () {
     this.container.remove();
-  };  
+  };
 
   window.ImageTile = ImageTile;
 

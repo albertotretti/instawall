@@ -1,4 +1,4 @@
-(function (window, $) {
+;(function (window, $) {
 
   /**
    * InstaWall
@@ -9,16 +9,16 @@
    * - columns:
    *     defines the total number of tile
    *     columns in the screen
-   * 
+   *
    * - rows:
    *     defines the total number of tile
    *     rows in the screen
    *
    * - options: (object)
-   *     - screenWidth/screenHeight: 
-   *         total size of the screen in pixels, 
-   *         null for using current window size 
-   * 
+   *     - screenWidth/screenHeight:
+   *         total size of the screen in pixels,
+   *         null for using current window size
+   *
    *     - tileWidth/tileHeight:
    *         size of each tile in pixels, null
    *         for automatic calculation based on
@@ -50,7 +50,7 @@
       tileHeight: null,
 
       onLoad: $.noop
-    
+
     }, options);
 
     // Auto screen size
@@ -63,16 +63,16 @@
 
     // Auto tile size
     if (wall.options.tileWidth == null) {
-      wall.options.tileWidth = 
+      wall.options.tileWidth =
         Math.floor(wall.options.screenWidth / columns);
     }
     if (wall.options.tileHeight == null) {
-      wall.options.tileHeight = 
+      wall.options.tileHeight =
         Math.floor(wall.options.screenHeight / rows);
     }
 
     wall.container = $("<div class='instawall'></div>");
-    
+
     wall.container.css({
       width:   wall.options.screenWidth,
       height:  wall.options.screenHeight
@@ -90,7 +90,7 @@
     }, 10000);
 
   };
-  
+
   InstaWall.prototype.onLoad = function (callback) {
     var onLoad = this.options.onLoad;
     var wall = this;
@@ -135,7 +135,7 @@
       "margin-left": (-1 * tile.container.width()) + "px"
     });
     oldTile.container.after(tile.container);
-    
+
     tile.onLoad(function () {
       tile.container.animate({opacity: 1.0}, function () {
         oldTile.destroy();
@@ -145,11 +145,11 @@
   }
 
   InstaWall.prototype.createInstaTile = function (feed, options) {
-    
+
     options = $.extend({
       width:  this.options.tileWidth,
       height: this.options.tileHeight,
-      captions: null      
+      captions: null
     }, options);
 
     if (options.captions == null) {
@@ -162,7 +162,7 @@
       userId:      feed.userId,
       accessToken: feed.accessToken,
       limit:       30
-    
+
     }, options);
 
     return tile;
@@ -173,10 +173,10 @@
   };
 
   InstaWall.prototype.createImageTile = function (src, options) {
-    
+
     options = $.extend({
       width:  this.options.tileWidth,
-      height: this.options.tileHeight     
+      height: this.options.tileHeight
     }, options);
 
     var tile = new ImageTile(src, options);
@@ -189,10 +189,10 @@
   };
 
   InstaWall.prototype.createInstaTileset = function (columns, rows, feed) {
-    
+
     var wall = new InstaWall(columns, rows, {
         screenWidth:  this.options.tileWidth,
-        screenHeight: this.options.tileHeight      
+        screenHeight: this.options.tileHeight
     });
 
     for (i = 0; i < (columns * rows); i++) {
