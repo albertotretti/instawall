@@ -1,6 +1,6 @@
 var ig = require('cloud/instagram-v1-1.0.js');
-ig.initialize('c1ea7e4a8d1b4094ad57798d7d0ebe23');
-ig.setAccessToken('969629.7ee45e1.564cf37667ee432fb08a8e91233f053f');
+ig.initialize('YOUR_CLIENT_ID');
+ig.setAccessToken('YOUR_ACCESS_TOKEN');
 EMPTY_RESPONSE = { meta: { code: 500}, data: [{}] };
 
 
