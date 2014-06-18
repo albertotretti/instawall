@@ -19,7 +19,7 @@
 
     <style>
       .bx-wrapper .bx-caption span {
-        font-size: 0.4em   !important;
+        font-size: 1em   !important;
         color:     #fff !important;
       }
     </style>
@@ -98,8 +98,8 @@
   $(document).ready(function(){
 
     var wall = new InstaWall(6, 2, {
-      screenWidth:  576,
-      screenHeight: 192
+      screenWidth:  1728,
+      screenHeight: 576
     });
     wall.container.css({opacity: 0});
     wall.container.appendTo($("#instawall"));
@@ -107,8 +107,8 @@
     // Create initial tiles
     for (var i = 0; i < 6 * 2; i++) {
       var random;
-      if (getParameterByName("callToAction") && i == 11) {
-        wall.addImageTile("images/calltoactionFR_black.png");
+      if (i == 5) {
+        wall.addImageTile("images/calltoactionProxxima.png");
       }
       else {
         random = Math.random();
@@ -129,7 +129,7 @@
       setInterval(function () {
         var tile, random;
         for (var i = 0; i < 6 * 2; i++) {
-          if (getParameterByName("callToAction") && i == 11) {
+          if (i == 5) {
             continue;
           }
           else {
