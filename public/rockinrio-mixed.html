@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<html>
+<head>
+    <script type="text/javascript" src="./lib/cache.js"></script>
+    <script type="text/javascript" src="./lib/config.js"></script>
+    <script type="text/javascript" src="./lib/parse-1.2.18.min.js"></script>
+    <script type="text/javascript" src="./lib/instafeed.js"></script>
+    <script type="text/javascript" src="./lib/jquery.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery.bxslider.js"></script>
+    <script type="text/javascript" src="./js/instatile.js"></script>
+    <script type="text/javascript" src="./js/imagetile.js"></script>
+    <script type="text/javascript" src="./js/instawall.js"></script>
+
+    <link href="./css/instawall.css" rel="stylesheet" />
+    <link href="./lib/jquery.bxslider.css" rel="stylesheet" />
+
+    <title>Instagram Wall</title>
+
+    <style>
+      .bx-wrapper .bx-caption span {
+        font-size: 2em   !important;
+        text-align: right;
+        color:     #fff !important;
+      }
+    </style>
+</head>
+
+<body style="background-color: #000; margin-left: 0px; margin-top: 0px">
+
+  <!-- <img id='callToAction' style='position:absolute; width:360px; height:360px; top:360px; left:1500px; z-index:2000; opacity: 1.0;'
+    src='./images/calltoactionSPFW_black.png'/> -->
+
+  <img src="images/calltoactionRockInRio.png" />
+  <div id="instawall">
+  </div>
+
+  <script type="text/javascript">
+
+  // Config
+  var columns = 4;
+  var lines   = 2;
+
+  var tilesetProbability = 0.25;
+
+  var screenWidth  = 1920;
+  var screenHeight = 960;
+
+  // Feeds
+  var feeds = [];
+
+  var userIds = [ // The userId of the featured accounts
+    //1084226810 // RockInRio
+  ];
+
+  var accessTokens = [ // The access token of the moderator account
+    "1353799875.c1ea7e4.73fb6194eec24e25ab7e803db2138b18" // RockInRioModeracao
+  ];
+
+  // Updates Parse feed
+  setInterval(function () {
+    for (var i = 0; i < userIds.length; i++) {
+      Parse.Cloud.run('updateRecentMediaByUser', {userId: userIds[i], count: '30'}, {
+        success: function(result) {
+          console.log(result);
+        },
+        error: function(error) {
+        }
+      });
+    };
+
+    for (var i = 0; i < accessTokens.length; i++) {
+      Parse.Cloud.run('updateSelfLikedMedia', {token: accessTokens[i], count: '30'}, {
+        success: function(result) {
+          console.log(result);
+        },
+        error: function(error) {
+        }
+      });
+    };
+  }, 30 * 1000);
+
+
+  $.each(accessTokens, function (i, accessToken) {
+    feeds.push({
+      get: "liked",
+      accessToken: accessToken,
+      userId: 0
+    });
+  });
+
+  $.each(userIds, function (i, userId) {
+    feeds.push({
+      get: "user",
+      userId: userId,
+      accessToken: ""
+    });
+  });
+
+
+  /* Document Ready */
+  $(document).ready(function(){
+
+    var wall = new InstaWall(columns, lines, {
+      screenWidth:  1920,
+      screenHeight: 960
+    });
+    wall.container.css({opacity: 0});
+    wall.container.appendTo($("#instawall"));
+
+    // Create initial tiles
+    for (var i = 0; i < columns * lines; i++) {
+      var random = Math.random();
+      if (random < tilesetProbability) {
+        wall.addInstaTileset(2, 2, feeds[i % feeds.length]);
+      }
+      else {
+        wall.addInstaTile(feeds[i % feeds.length]);
+      }
+    }
+
+    wall.onLoad(function () {
+      wall.container.animate({
+        opacity: 1.0
+      }, 3000);
+      setInterval(function () {
+        var tile, random;
+        for (var i = 0; i < columns * lines; i++) {
+          random = Math.random();
+          if (random < (0.3 / (columns * lines))/5 && wall.tiles[i].loaded) {
+            random = Math.random();
+            if (random < tilesetProbability) {
+              tile = wall.createInstaTileset(2, 2, feeds[i % feeds.length]);
+            }
+            else {
+              tile = wall.createInstaTile(feeds[i % feeds.length]);
+            }
+            wall.replaceTile(i, tile);
+          }
+        }
+      }, 300);
+    });
+
+  });
+
+  setTimeout(function () {
+    location.reload();
+  }, 30 * 60 * 1000)
+
+  </script>
+</body>
+</html>
